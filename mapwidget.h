@@ -7,6 +7,7 @@
 
 class MapWidget : public QGraphicsView
 {
+    Q_OBJECT
 public:
     MapWidget();
     void readMap();
@@ -14,8 +15,8 @@ public:
 public slots:
     void slotZoom(int);
 protected:
-//    void drawBackground(QPainter *painter,const QRectF &rect);
-//    void mouseMoveEvent(QMouseEvent *event);
+    void drawBackground(QPainter *painter,const QRectF &rect);
+    void mouseMoveEvent(QMouseEvent *event);
 private:
     QPixmap map;
     qreal zoom;

@@ -51,7 +51,7 @@ MapWidget::MapWidget()
     gridLayout->addWidget(label2,1,0);
     gridLayout->addWidget(sceneCoord,1,1);
     gridLayout->addWidget(label3,2,0);
-    gridLayout->addWidget(mapCoord,3,1);
+    gridLayout->addWidget(mapCoord,2,1);
     gridLayout->setSizeConstraint(QLayout::SetFixedSize);
     QFrame *coordFrame = new QFrame;
     coordFrame->setLayout(gridLayout);
@@ -87,9 +87,51 @@ void MapWidget::readMap()
             ts>>x1>>y1>>x2>>y2;
         }
     }
+    map.load(mapName);
+}
+
+QPointF MapWidget::mapToMap(QPointF p)
+{
+    QPointF latLon;
+    qreal w =sceneRect().width();
+    qreal h =sceneRect().height();
+    qreal lon = y1-((h/2+p.y())*abs(y1-y2)/h);
+    qreal lat = x1+((w/2+p.x())*abs(x1-x2)/w);
+    latLon.setX(lat);
+    latLon.setY(lon);
+    return latLon;
 }
 
 void MapWidget::slotZoom(int value)
 {
+    qreal s;
+    if(value>zoom)                              //放大
+    {
+        s=pow(1.01,(value-zoom));
+    }
+    else                                        //缩小
+    {
+        s=pow(1/1.01,(zoom-value));
+    }
+    scale(s,s);
+    zoom = value;
+}
 
+void MapWidget::drawBackground(QPainter *painter, const QRectF &rect)
+{
+    painter->drawPixmap(int(sceneRect().x()),int(sceneRect().y()), map);
+}
+
+void MapWidget::mouseMoveEvent(QMouseEvent *event)
+{
+    //坐标
+    QPoint viewPoint = event->pos();
+    viewCoord->setText(QString::number(viewPoint.x())+","+QString::number(viewPoint.y()));
+    //QGraphiceScene 坐标
+    QPointF scenePoint = mapToScene(viewPoint);
+    sceneCoord->setText(QString::number(scenePoint.x())+","+QString::number(scenePoint.y()));
+
+    //地图坐标
+    QPointF latLon = mapToMap(viewPoint);
+    mapCoord->setText(QString::number(latLon.x())+","+QString::number(latLon.y()));
 }

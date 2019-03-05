@@ -27,5 +27,7 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     mapwidget.cpp
 
+
 HEADERS  += mainwindow.h \
     mapwidget.h
+
